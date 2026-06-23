@@ -1,0 +1,54 @@
+name: Build & Deploy
+
+# Generiert die Leistungsseiten aus content/content.js und deployt die Website.
+# Trigger: bei Push auf den Hauptzweig.
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # Leistungsseiten aus content.js generieren
+      - name: Leistungsseiten generieren
+        run: node scripts/generate-leistungen.js
+
+      # Statische Seite als Artefakt für GitHub Pages bündeln
+      - name: Pages-Artefakt hochladen
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Auf GitHub Pages deployen
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+# --- Hinweis ----------------------------------------------------------------
+# Wird statt GitHub Pages ein eigener Server (Docker/nginx) genutzt, ersetzt
+# man den deploy-Job z. B. durch einen rsync-/SSH-Schritt oder baut das
+# Docker-Image (siehe docker-compose.yml und nginx.conf) und pusht es in eine
+# Registry. Der Generierungsschritt (node scripts/generate-leistungen.js)
+# bleibt in jedem Fall erhalten.

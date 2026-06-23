@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Rechtliche Seiten nicht indexieren (per Meta-Robots zusätzlich gesetzt)
+Disallow: /impressum.html
+Disallow: /datenschutz.html
+
+Sitemap: https://www.maler-wagner.de/sitemap.xml

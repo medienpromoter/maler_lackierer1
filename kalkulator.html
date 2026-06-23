@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kostenrechner für Malerarbeiten – Malerbetrieb Wagner aus Mannheim</title>
+  <meta name="description" content="Grobe Kostenschätzung für Malerarbeiten in Mannheim: Fläche eingeben und unverbindliche Richtgröße erhalten. Das verbindliche Festpreisangebot folgt nach kostenloser Besichtigung.">
+  <link rel="canonical" href="https://www.maler-wagner.de/kalkulator.html">
+  <link rel="icon" href="images/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <h1>Was kostet das ungefähr?</h1>
+        <p>Geben Sie ein paar Eckdaten ein und Sie erhalten eine grobe Richtgröße. Das ist keine verbindliche Zusage – den Festpreis nennen wir nach einer kostenlosen Besichtigung.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="calc">
+          <div class="form-wrap">
+            <form id="calc-form">
+              <div class="form-row">
+                <div class="field">
+                  <label for="c-leistung">Leistung</label>
+                  <select id="c-leistung">
+                    <option value="innen">Innenanstrich (Wände & Decken)</option>
+                    <option value="fassade">Fassadenanstrich</option>
+                    <option value="lack">Lackierarbeiten (Türen/Fenster)</option>
+                    <option value="boden">Bodenbeschichtung</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row form-row--2">
+                <div class="field">
+                  <label for="c-flaeche">Fläche in m² <span id="c-flaeche-unit">(Wand-/Deckenfläche)</span></label>
+                  <input type="number" id="c-flaeche" min="1" value="60">
+                </div>
+                <div class="field">
+                  <label for="c-zustand">Zustand des Untergrunds</label>
+                  <select id="c-zustand">
+                    <option value="1">Gut – nur streichen</option>
+                    <option value="1.25">Mittel – kleine Spachtelarbeiten</option>
+                    <option value="1.55">Aufwendig – viel Vorbereitung</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field field--check">
+                <input type="checkbox" id="c-anstriche" checked>
+                <label for="c-anstriche">Zwei Anstriche für deckendes Ergebnis (empfohlen)</label>
+              </div>
+              <p class="form-note">Die Berechnung basiert auf groben Durchschnittswerten und dient nur der ersten Orientierung. Material- und Gerüstkosten können je nach Projekt abweichen.</p>
+            </form>
+          </div>
+
+          <div class="calc__result">
+            <h3>Grobe Schätzung</h3>
+            <div class="calc__price" id="calc-price">– €</div>
+            <p class="calc__hint" id="calc-range">Richtwert inkl. Arbeit. Verbindlich nach Besichtigung.</p>
+            <a class="btn btn--primary btn--block" href="kontakt.html" style="margin-top:1rem">Verbindliches Angebot anfragen</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="content/content.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/footer.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+  /* Einfache, transparente Kostenschätzung. Werte sind Richtwerte in €/m²
+     und sollten vom Betrieb an die eigene Kalkulation angepasst werden. */
+  (function () {
+    var BASE = { innen: 9, fassade: 28, lack: 35, boden: 45 }; // €/m² Richtwert
+    var UNIT = {
+      innen: "(Wand-/Deckenfläche)",
+      fassade: "(Fassadenfläche)",
+      lack: "(zu lackierende Fläche)",
+      boden: "(Bodenfläche)"
+    };
+    var form = document.getElementById("calc-form");
+    var price = document.getElementById("calc-price");
+    var unit = document.getElementById("c-flaeche-unit");
+
+    function calc() {
+      var leistung = document.getElementById("c-leistung").value;
+      var flaeche = parseFloat(document.getElementById("c-flaeche").value) || 0;
+      var zustand = parseFloat(document.getElementById("c-zustand").value) || 1;
+      var zwei = document.getElementById("c-anstriche").checked ? 1.35 : 1;
+      unit.textContent = UNIT[leistung] || "";
+
+      var total = flaeche * BASE[leistung] * zustand * zwei;
+      if (total <= 0) { price.textContent = "– €"; return; }
+      // Spanne ±15 % anzeigen
+      var low = Math.round(total * 0.85 / 10) * 10;
+      var high = Math.round(total * 1.15 / 10) * 10;
+      price.textContent = low.toLocaleString("de-DE") + " – " + high.toLocaleString("de-DE") + " €";
+    }
+    form.addEventListener("input", calc);
+    calc();
+  })();
+  </script>
+</body>
+</html>
